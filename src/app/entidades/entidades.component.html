@@ -1,10 +1,7 @@
-<!-- @for(entidad of entidadesService.entidades(); track entidad.id){
-    {{entidad.nombre}}
-} -->
-<p-card header="Entidades">
-
+<p-card header="Entidades" styleClass="shadow-3">
     <p-toast />
-    <p-toolbar styleClass="mb-4 gap-2">
+    
+    <p-toolbar styleClass="mb-4">
         <ng-template pTemplate="left">
             <p-button 
                 severity="success" 
@@ -15,112 +12,259 @@
             <p-button 
                 severity="danger" 
                 label="Eliminar" 
-                icon="pi pi-trash" badge="{{selectedEntidades.length}}" 
-                />
+                icon="pi pi-trash" 
+                [badge]="selectedEntidades().length.toString()" 
+                [disabled]="selectedEntidades().length === 0"
+                (onClick)="deleteSelected()" />
         </ng-template>
     
         <ng-template pTemplate="right">
+            <span class="text-500 font-medium">Total: {{ total() }}</span>
         </ng-template>
     </p-toolbar>
+
     <p-table
         #dt
         [value]="entidadesService.entidades()"
         [rows]="10"
         [paginator]="true"
-        [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+        [globalFilterFields]="['ent_nombre', 'ent_nit', 'ent_telefono', 'ent_direccion', 'ent_email', 'ent_estado']"
         [tableStyle]="{ 'min-width': '75rem' }"
         [rowHover]="true"
-        dataKey="id"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        dataKey="ent_id"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} entidades"
         [showCurrentPageReport]="true"
         [loading]="entidadesService.loading()"
-        [(selection)]="selectedEntidades" 
+        [(selection)]="selectedEntidades"
     >
         <ng-template pTemplate="caption">
             <div class="flex align-items-center justify-content-between">
-                <h5 class="m-0">Lista de entidades</h5>
+                <h5 class="m-0 text-900 font-semibold">Lista de Entidades</h5>
                 <span class="p-input-icon-left">
                     <i class="pi pi-search"></i>
                     <input 
                         pInputText 
                         type="text" 
-                        class="fietext-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-fullld"
-                        placeholder="Search..." />
+                        (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                        class="text-base text-color surface-overlay p-2 border surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                        placeholder="Buscar..." />
                 </span>
             </div>
         </ng-template>
+        
         <ng-template pTemplate="header">
             <tr>
                 <th style="width: 4rem">
                     <p-tableHeaderCheckbox />
                 </th>
-                <th pSortableColumn="nombre" style="min-width:15rem">
-                    Nombre <p-sortIcon field="nombre" />
+                <th pSortableColumn="ent_nombre" style="min-width:15rem">
+                    Nombre <p-sortIcon field="ent_nombre" />
                 </th>
-                <th>
-                    Nit
+                <th pSortableColumn="ent_nit">
+                    NIT <p-sortIcon field="ent_nit" />
                 </th>
-                <th pSortableColumn="telefono">
-                    Teléfono <p-sortIcon field="telefono" />
+                <th pSortableColumn="ent_telefono">
+                    Teléfono <p-sortIcon field="ent_telefono" />
                 </th>
-                <th pSortableColumn="direccion" style="min-width:10rem">
-                    Dirección <p-sortIcon field="direccion" />
+                <th pSortableColumn="ent_direccion" style="min-width:10rem">
+                    Dirección <p-sortIcon field="ent_direccion" />
                 </th>
-                <th>
-                    Opciones
+                <th pSortableColumn="ent_email" style="min-width:12rem">
+                    Email <p-sortIcon field="ent_email" />
                 </th>
+                <th pSortableColumn="ent_estado" style="width: 8rem">
+                    Estado <p-sortIcon field="ent_estado" />
+                </th>
+                <th style="width: 10rem">Opciones</th>
             </tr>
         </ng-template>
+        
         <ng-template pTemplate="body" let-entidad>
             <tr>
                 <td>
                     <p-tableCheckbox [value]="entidad" />
                 </td>
                 <td>
-                    {{ entidad.nombre }}
+                    <span class="font-medium">{{ entidad.ent_nombre }}</span>
                 </td>
                 <td>
-                    {{ entidad.nit }}
+                    {{ entidad.ent_nit }}
                 </td>
                 <td>
-                    {{ entidad.telefono }}
+                    <i class="pi pi-phone mr-2 text-500"></i>{{ entidad.ent_telefono }}
                 </td>
                 <td>
-                    {{ entidad.direccion }}
+                    <i class="pi pi-map-marker mr-2 text-500"></i>{{ entidad.ent_direccion }}
                 </td>
                 <td>
-                    <p-button 
-                     
-                        icon="pi pi-pencil" 
-                        class="mr-2" 
-                        [rounded]="true" 
-                        [outlined]="true" 
-                        severity="success" 
-                        (onClick)="edit(entidad)" />
-                    <p-button 
-                     
-                        icon="pi pi-trash" 
-                        class="mr-2" 
-                        severity="danger" 
-                        [rounded]="true" 
-                        [outlined]="true" 
-                        (onClick)="entidadesService.delete(entidad)" />
-                    <p-button 
-                     
-                        icon="pi pi-users" 
-                        severity="info" 
-                        [rounded]="true" 
-                        [outlined]="true" 
-                        />
-
+                    <i class="pi pi-envelope mr-2 text-500"></i>{{ entidad.ent_email }}
+                </td>
+                <td>
+                    <span 
+                        [class]="entidad.ent_estado === 0 ? 'px-2 py-1 border-round text-sm font-semibold bg-red-100 text-red-900' : 'px-2 py-1 border-round text-sm font-semibold bg-green-100 text-green-900'">
+                        {{ entidad.ent_estado === 0 ? 'Inactiva' : 'Activa' }}
+                    </span>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <p-button 
+                            icon="pi pi-pencil" 
+                            [rounded]="true" 
+                            [outlined]="true" 
+                            severity="success" 
+                            (onClick)="edit(entidad)" 
+                            pTooltip="Editar"
+                            tooltipPosition="top" />
+                        <p-button 
+                            icon="pi pi-trash" 
+                            severity="danger" 
+                            [rounded]="true" 
+                            [outlined]="true" 
+                            (onClick)="deleteEntity(entidad)" 
+                            pTooltip="Eliminar"
+                            tooltipPosition="top" />
+                    </div>
                 </td>
             </tr>
         </ng-template>
+        
         <ng-template pTemplate="summary">
             <div class="flex align-items-center justify-content-between">
-                Total {{ total() }} entidades.
+                <span class="text-600">Total: {{ total() }} entidades registradas</span>
             </div>
         </ng-template>
     </p-table>
-
 </p-card>
+
+<!-- Modal para crear/editar entidad -->
+<p-dialog 
+    [header]="dialogTitle()" 
+    [(visible)]="dialogVisible" 
+    [modal]="true" 
+    [style]="{width: '550px'}" 
+    [draggable]="false" 
+    [resizable]="false"
+    styleClass="p-fluid">
+    
+    <form [formGroup]="entidadForm" (ngSubmit)="saveEntidad()">
+        <div class="formgrid grid p-3">
+            <div class="col-12 mb-2">
+                <small class="text-600">
+                    <i class="pi pi-info-circle mr-1"></i>
+                    Los campos marcados con <span class="text-red-500 font-semibold">*</span> son obligatorios
+                </small>
+            </div>
+            
+            <!-- Nombre -->
+            <div class="field col-12">
+                <label for="nombre" class="font-semibold">
+                    Nombre <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="nombre" 
+                    formControlName="nombre" 
+                    placeholder="Ingrese el nombre de la entidad"
+                    class="w-full"
+                    [class.ng-invalid]="entidadForm.get('nombre')?.invalid && entidadForm.get('nombre')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('nombre')">
+                    {{ getFieldError('nombre') }}
+                </small>
+            </div>
+
+            <!-- NIT -->
+            <div class="field col-12 md:col-6">
+                <label for="nit" class="font-semibold">
+                    NIT <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="nit" 
+                    formControlName="nit" 
+                    placeholder="Ej: 900100001"
+                    [class.ng-invalid]="entidadForm.get('nit')?.invalid && entidadForm.get('nit')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('nit')">
+                    {{ getFieldError('nit') }}
+                </small>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="field col-12 md:col-6">
+                <label for="telefono" class="font-semibold">
+                    Teléfono <span class="text-500 text-sm">(Opcional)</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="telefono" 
+                    formControlName="telefono" 
+                    placeholder="Ej: 6041111111"
+                    [class.ng-invalid]="entidadForm.get('telefono')?.invalid && entidadForm.get('telefono')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('telefono')">
+                    {{ getFieldError('telefono') }}
+                </small>
+            </div>
+
+            <!-- Email -->
+            <div class="field col-12">
+                <label for="email" class="font-semibold">
+                    Email <span class="text-500 text-sm">(Opcional)</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="email" 
+                    formControlName="email" 
+                    placeholder="correo@ejemplo.com"
+                    type="email"
+                    [class.ng-invalid]="entidadForm.get('email')?.invalid && entidadForm.get('email')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('email')">
+                    {{ getFieldError('email') }}
+                </small>
+            </div>
+
+            <!-- Dirección -->
+            <div class="field col-12">
+                <label for="direccion" class="font-semibold">
+                    Dirección <span class="text-500 text-sm">(Opcional)</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="direccion" 
+                    formControlName="direccion" 
+                    placeholder="Ingrese la dirección completa"
+                    [class.ng-invalid]="entidadForm.get('direccion')?.invalid && entidadForm.get('direccion')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('direccion')">
+                    {{ getFieldError('direccion') }}
+                </small>
+            </div>
+            <!-- Estado -->
+            <div class="field col-12">
+                <label for="estado" class="font-semibold">
+                    Estado
+                </label>
+                <select 
+                    id="estado" 
+                    formControlName="estado"
+                    class="w-full p-2 border surface-border border-round">
+                    <option [value]="1">Activa</option>
+                    <option [value]="0">Inactiva</option>
+                </select>
+            </div>        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2">
+            <p-button 
+                label="Cancelar" 
+                icon="pi pi-times" 
+                [outlined]="true"
+                severity="secondary"
+                (onClick)="hideDialog()" 
+                [disabled]="submitting()" />
+            <p-button 
+                label="Guardar" 
+                icon="pi pi-check" 
+                [loading]="submitting()"
+                (onClick)="saveEntidad()" />
+        </div>
+    </ng-template>
+</p-dialog>

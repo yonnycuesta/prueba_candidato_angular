@@ -1,1 +1,50 @@
-<router-outlet />
+<div class="min-h-screen surface-ground">
+  <!-- Header con Menú de Navegación -->
+  <div class="surface-overlay shadow-2">
+    <div class="container-centered">
+      <div class="flex align-items-center justify-content-between px-4 py-3">
+        <div class="flex align-items-center">
+          <i class="pi pi-shield text-4xl text-primary mr-3"></i>
+          <div>
+            <h2 class="m-0 text-primary font-bold">{{ title }}</h2>
+            <p class="m-0 text-sm text-500">Sistema de Gestión de Entidades y Contactos</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Menú de Navegación -->
+      <div class="px-4 pb-2">
+        <div class="flex gap-2">
+          <a 
+            routerLink="/entidades" 
+            routerLinkActive="bg-primary"
+            class="px-4 py-2 border-round cursor-pointer hover:bg-primary-reverse transition-colors transition-duration-200 flex align-items-center gap-2 no-underline text-color">
+            <i class="pi pi-building"></i>
+            <span class="font-medium">Entidades</span>
+          </a>
+          <a 
+            routerLink="/contactos" 
+            routerLinkActive="bg-primary"
+            class="px-4 py-2 border-round cursor-pointer hover:bg-primary-reverse transition-colors transition-duration-200 flex align-items-center gap-2 no-underline text-color">
+            <i class="pi pi-users"></i>
+            <span class="font-medium">Contactos</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div class="container-centered py-4">
+    <router-outlet />
+  </div>
+
+  <!-- Footer -->
+  <div class="surface-section py-3 mt-5 text-center border-top-1 surface-border">
+    <div class="container-centered">
+      <p class="text-600 text-sm m-0">
+        © 2026 Sistema de Gestión | Desarrollado por Yonny Cuesta Moreno
+      </p>
+    </div>
+  </div>
+</div>

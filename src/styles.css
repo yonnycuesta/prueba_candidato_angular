@@ -4,3 +4,107 @@
 @import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
+@import "sweetalert2/dist/sweetalert2.min.css";
+
+/* Estilos globales personalizados */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+/* Contenedor centrado */
+.container-centered {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Personalización de SweetAlert2 */
+.swal2-popup {
+    font-family: var(--font-family);
+    border-radius: 12px;
+}
+
+.swal2-title {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.swal2-html-container {
+    color: var(--text-color-secondary);
+}
+
+.swal2-confirm {
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.swal2-cancel {
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.text-muted {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Mejorar la apariencia de los formularios */
+.p-field > label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Estilos para los enlaces del menú activos */
+.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.bg-primary-reverse {
+    background-color: var(--primary-100) !important;
+}
+
+/* Mejorar las tablas */
+.p-datatable .p-datatable-thead > tr > th {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Animaciones suaves */
+.p-button {
+    transition: all 0.2s ease-in-out;
+}
+
+.p-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos para los inputs con error */
+.ng-invalid.ng-touched {
+    border-color: var(--red-500) !important;
+}
+
+/* Card con sombra */
+.shadow-3 {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Estilos responsivos */
+@media screen and (max-width: 768px) {
+    .p-toolbar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .p-field.col-12.md\\:col-6 {
+        width: 100% !important;
+    }
+}

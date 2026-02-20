@@ -1,3 +1,4 @@
+
 :host ::ng-deep .p-card {
     border-radius: 12px;
 }
@@ -44,6 +45,11 @@
     border: 1px solid var(--surface-border);
 }
 
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-calendar {
+    width: 100%;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -58,3 +64,4 @@
 :host {
     animation: fadeIn 0.5s ease-out;
 }
+

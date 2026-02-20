@@ -1,0 +1,456 @@
+<p-card header="Contactos" styleClass="shadow-3">
+    <p-toast />
+    
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <p-button 
+                severity="success" 
+                label="Nuevo" 
+                icon="pi pi-plus" 
+                class="mr-2" 
+                (onClick)="openNew()" />
+            <p-button 
+                severity="danger" 
+                label="Eliminar" 
+                icon="pi pi-trash" 
+                [badge]="selectedContactos().length.toString()" 
+                [disabled]="selectedContactos().length === 0"
+                (onClick)="deleteSelected()" />
+        </ng-template>
+    
+        <ng-template pTemplate="right">
+            <span class="text-500 font-medium">Total: {{ total() }}</span>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table
+        #dt
+        [value]="contactosService.contactos()"
+        [rows]="10"
+        [paginator]="true"
+        [globalFilterFields]="['cont_nombre', 'cont_identificacion', 'cont_email', 'cont_telefono', 'cont_entidad_nombre']"
+        [tableStyle]="{ 'min-width': '75rem' }"
+        [rowHover]="true"
+        dataKey="cont_id"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} contactos"
+        [showCurrentPageReport]="true"
+        [loading]="contactosService.loading()"
+        [(selection)]="selectedContactos"
+    >
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between">
+                <h5 class="m-0 text-900 font-semibold">Lista de Contactos</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input 
+                        pInputText 
+                        type="text" 
+                        (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                        class="text-base text-color surface-overlay p-2 border surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                        placeholder="Buscar..." />
+                </span>
+            </div>
+        </ng-template>
+        
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 4rem">
+                    <p-tableHeaderCheckbox />
+                </th>
+                <th pSortableColumn="cont_nombre" style="min-width:12rem">
+                    Nombre <p-sortIcon field="cont_nombre" />
+                </th>
+                <th pSortableColumn="cont_identificacion">
+                    Identificación <p-sortIcon field="cont_identificacion" />
+                </th>
+                <th pSortableColumn="cont_email" style="min-width:12rem">
+                    Email <p-sortIcon field="cont_email" />
+                </th>
+                <th pSortableColumn="cont_telefono">
+                    Teléfono <p-sortIcon field="cont_telefono" />
+                </th>
+                <th pSortableColumn="cont_entidad_nombre" style="min-width:12rem">
+                    Entidad <p-sortIcon field="cont_entidad_nombre" />
+                </th>
+                <th style="width: 10rem">Opciones</th>
+            </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="body" let-contacto>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="contacto" />
+                </td>
+                <td>
+                    <span class="font-medium">{{ contacto.cont_nombre }}</span>
+                </td>
+                <td>
+                    <i class="pi pi-id-card mr-2 text-500"></i>{{ contacto.cont_identificacion }}
+                </td>
+                <td>
+                    <i class="pi pi-envelope mr-2 text-500"></i>{{ contacto.cont_email }}
+                </td>
+                <td>
+                    <i class="pi pi-phone mr-2 text-500"></i>{{ contacto.cont_telefono }}
+                </td>
+                <td>
+                    <span class="font-medium text-primary">{{ contacto.cont_entidad_nombre }}</span>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <p-button 
+                            icon="pi pi-eye" 
+                            [rounded]="true" 
+                            [outlined]="true" 
+                            severity="info" 
+                            (onClick)="viewContactoDetails(contacto)" 
+                            pTooltip="Ver detalles"
+                            tooltipPosition="top" />
+                        <p-button 
+                            icon="pi pi-pencil" 
+                            [rounded]="true" 
+                            [outlined]="true" 
+                            severity="success" 
+                            (onClick)="edit(contacto)" 
+                            pTooltip="Editar"
+                            tooltipPosition="top" />
+                        <p-button 
+                            icon="pi pi-trash" 
+                            severity="danger" 
+                            [rounded]="true" 
+                            [outlined]="true" 
+                            (onClick)="deleteContact(contacto)" 
+                            pTooltip="Eliminar"
+                            tooltipPosition="top" />
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                <span class="text-600">Total: {{ total() }} contactos registrados</span>
+            </div>
+        </ng-template>
+    </p-table>
+</p-card>
+
+<!-- Modal para crear/editar contacto -->
+<p-dialog 
+    [header]="dialogTitle()" 
+    [(visible)]="dialogVisible" 
+    [modal]="true" 
+    [style]="{width: '700px'}" 
+    [draggable]="false" 
+    [resizable]="false"
+    styleClass="p-fluid">
+    
+    <form [formGroup]="contactoForm" (ngSubmit)="saveContacto()">
+        <div class="formgrid grid p-3">
+            <div class="col-12 mb-2">
+                <small class="text-600">
+                    <i class="pi pi-info-circle mr-1"></i>
+                    Los campos marcados con <span class="text-red-500 font-semibold">*</span> son obligatorios
+                </small>
+            </div>
+            
+            <!-- Nombre -->
+            <div class="field col-12 md:col-6">
+                <label for="nombre" class="font-semibold">
+                    Nombre Completo <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="nombre" 
+                    formControlName="nombre" 
+                    placeholder="Ingrese el nombre completo"
+                    class="w-full"
+                    [class.ng-invalid]="contactoForm.get('nombre')?.invalid && contactoForm.get('nombre')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('nombre')">
+                    {{ getFieldError('nombre') }}
+                </small>
+            </div>
+
+            <!-- Identificación -->
+            <div class="field col-12 md:col-6">
+                <label for="identificacion" class="font-semibold">
+                    Identificación <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="identificacion" 
+                    formControlName="identificacion" 
+                    placeholder="Ej: CC-10203040"
+                    [class.ng-invalid]="contactoForm.get('identificacion')?.invalid && contactoForm.get('identificacion')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('identificacion')">
+                    {{ getFieldError('identificacion') }}
+                </small>
+            </div>
+
+            <!-- Email -->
+            <div class="field col-12 md:col-6">
+                <label for="email" class="font-semibold">
+                    Email <span class="text-500 text-sm">(Opcional)</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="email" 
+                    formControlName="email" 
+                    placeholder="correo@ejemplo.com"
+                    type="email"
+                    [class.ng-invalid]="contactoForm.get('email')?.invalid && contactoForm.get('email')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('email')">
+                    {{ getFieldError('email') }}
+                </small>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="field col-12 md:col-6">
+                <label for="telefono" class="font-semibold">
+                    Teléfono <span class="text-500 text-sm">(Opcional)</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="telefono" 
+                    formControlName="telefono" 
+                    placeholder="Ej: 3004567890"
+                    [class.ng-invalid]="contactoForm.get('telefono')?.invalid && contactoForm.get('telefono')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('telefono')">
+                    {{ getFieldError('telefono') }}
+                </small>
+            </div>
+
+            <!-- Fecha de Nacimiento -->
+            <div class="field col-12 md:col-6">
+                <label for="fecha_nacimiento" class="font-semibold">
+                    Fecha de Nacimiento <span class="text-500 text-sm">(Opcional)</span>
+                </label>
+                <input 
+                    pInputText
+                    type="date"
+                    id="fecha_nacimiento" 
+                    formControlName="fecha_nacimiento"
+                    [max]="getTodayString()"
+                    class="w-full"
+                    [class.ng-invalid]="contactoForm.get('fecha_nacimiento')?.invalid && contactoForm.get('fecha_nacimiento')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('fecha_nacimiento')">
+                    {{ getFieldError('fecha_nacimiento') }}
+                </small>
+            </div>
+
+            <!-- Entidad -->
+            <div class="field col-12 md:col-6">
+                <label for="entidad_id" class="font-semibold">
+                    Entidad <span class="text-red-500">*</span>
+                </label>
+                <p-dropdown 
+                    inputId="entidad_id"
+                    [options]="entidadesOptions()" 
+                    formControlName="entidad_id"
+                    placeholder="Seleccione una entidad"
+                    [filter]="true"
+                    filterBy="label"
+                    [showClear]="true"
+                    [class.ng-invalid]="contactoForm.get('entidad_id')?.invalid && contactoForm.get('entidad_id')?.touched">
+                </p-dropdown>
+                <small class="text-red-500" *ngIf="getFieldError('entidad_id')">
+                    {{ getFieldError('entidad_id') }}
+                </small>
+            </div>
+
+            <!-- Dirección -->
+            <div class="field col-12">
+                <label for="direccion" class="font-semibold">
+                    Dirección <span class="text-500 text-sm">(Opcional)</span>
+                </label>
+                <input 
+                    pInputText 
+                    id="direccion" 
+                    formControlName="direccion" 
+                    placeholder="Ingrese la dirección completa"
+                    [class.ng-invalid]="contactoForm.get('direccion')?.invalid && contactoForm.get('direccion')?.touched" />
+                <small class="text-red-500" *ngIf="getFieldError('direccion')">
+                    {{ getFieldError('direccion') }}
+                </small>
+            </div>
+
+            <!-- Notas -->
+            <div class="field col-12">
+                <label for="notas" class="font-semibold">
+                    Notas
+                </label>
+                <textarea 
+                    pInputTextarea
+                    id="notas" 
+                    formControlName="notas" 
+                    rows="3"
+                    placeholder="Notas adicionales sobre el contacto"
+                    [class.ng-invalid]="contactoForm.get('notas')?.invalid && contactoForm.get('notas')?.touched">
+                </textarea>
+                <small class="text-red-500" *ngIf="getFieldError('notas')">
+                    {{ getFieldError('notas') }}
+                </small>
+            </div>
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2">
+            <p-button 
+                label="Cancelar" 
+                icon="pi pi-times" 
+                [outlined]="true"
+                severity="secondary"
+                (onClick)="hideDialog()" 
+                [disabled]="submitting()" />
+            <p-button 
+                label="Guardar" 
+                icon="pi pi-check" 
+                [loading]="submitting()"
+                (onClick)="saveContacto()" />
+        </div>
+    </ng-template>
+</p-dialog>
+
+<!-- Modal para ver detalles del contacto -->
+<p-dialog 
+    header="Detalles del Contacto" 
+    [(visible)]="viewDialogVisible" 
+    [modal]="true" 
+    [style]="{width: '700px'}" 
+    [draggable]="false" 
+    [resizable]="false"
+    styleClass="p-fluid">
+    
+    <div *ngIf="viewContacto()" class="p-3">
+        <div class="grid">
+            <!-- Información Personal -->
+            <div class="col-12">
+                <div class="surface-100 border-round p-3 mb-3">
+                    <h3 class="text-900 font-semibold mb-3 flex align-items-center">
+                        <i class="pi pi-user mr-2 text-primary"></i>
+                        Información Personal
+                    </h3>
+                    
+                    <div class="grid">
+                        <div class="col-12 md:col-6 mb-3">
+                            <label class="text-600 font-medium block mb-2">Nombre Completo</label>
+                            <p class="text-900 font-semibold m-0">
+                                <i class="pi pi-user mr-2 text-500"></i>{{ viewContacto()!.cont_nombre }}
+                            </p>
+                        </div>
+                        
+                        <div class="col-12 md:col-6 mb-3">
+                            <label class="text-600 font-medium block mb-2">Identificación</label>
+                            <p class="text-900 font-semibold m-0">
+                                <i class="pi pi-id-card mr-2 text-500"></i>{{ viewContacto()!.cont_identificacion }}
+                            </p>
+                        </div>
+                        
+                        <div class="col-12 md:col-6 mb-3">
+                            <label class="text-600 font-medium block mb-2">Fecha de Nacimiento</label>
+                            <p class="text-900 m-0">
+                                <i class="pi pi-calendar mr-2 text-500"></i>
+                                {{ viewContacto()!.cont_fecha_nacimiento ? (viewContacto()!.cont_fecha_nacimiento | date: 'dd/MM/yyyy') : 'No especificada' }}
+                            </p>
+                        </div>
+                        
+                        <div class="col-12 md:col-6 mb-3">
+                            <label class="text-600 font-medium block mb-2">Fecha de Registro</label>
+                            <p class="text-900 m-0">
+                                <i class="pi pi-clock mr-2 text-500"></i>
+                                {{ viewContacto()!.cont_created_at ? (viewContacto()!.cont_created_at | date: 'dd/MM/yyyy HH:mm') : 'No disponible' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información de Contacto -->
+            <div class="col-12">
+                <div class="surface-100 border-round p-3 mb-3">
+                    <h3 class="text-900 font-semibold mb-3 flex align-items-center">
+                        <i class="pi pi-phone mr-2 text-primary"></i>
+                        Información de Contacto
+                    </h3>
+                    
+                    <div class="grid">
+                        <div class="col-12 md:col-6 mb-3">
+                            <label class="text-600 font-medium block mb-2">Email</label>
+                            <p class="text-900 m-0">
+                                <i class="pi pi-envelope mr-2 text-500"></i>
+                                {{ viewContacto()!.cont_email || 'No especificado' }}
+                            </p>
+                        </div>
+                        
+                        <div class="col-12 md:col-6 mb-3">
+                            <label class="text-600 font-medium block mb-2">Teléfono</label>
+                            <p class="text-900 m-0">
+                                <i class="pi pi-phone mr-2 text-500"></i>
+                                {{ viewContacto()!.cont_telefono || 'No especificado' }}
+                            </p>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label class="text-600 font-medium block mb-2">Dirección</label>
+                            <p class="text-900 m-0">
+                                <i class="pi pi-map-marker mr-2 text-500"></i>
+                                {{ viewContacto()!.cont_direccion || 'No especificada' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Entidad Asociada -->
+            <div class="col-12">
+                <div class="surface-100 border-round p-3 mb-3">
+                    <h3 class="text-900 font-semibold mb-3 flex align-items-center">
+                        <i class="pi pi-building mr-2 text-primary"></i>
+                        Entidad Asociada
+                    </h3>
+                    
+                    <div class="grid">
+                        <div class="col-12">
+                            <label class="text-600 font-medium block mb-2">Entidad</label>
+                            <p class="text-primary font-bold text-xl m-0">
+                                <i class="pi pi-building mr-2"></i>
+                                {{ viewContacto()!.cont_entidad_nombre || 'No especificada' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notas -->
+            <div class="col-12" *ngIf="viewContacto()!.cont_notas">
+                <div class="surface-100 border-round p-3">
+                    <h3 class="text-900 font-semibold mb-3 flex align-items-center">
+                        <i class="pi pi-file-edit mr-2 text-primary"></i>
+                        Notas Adicionales
+                    </h3>
+                    
+                    <div class="surface-0 border-round p-3">
+                        <p class="text-700 m-0 white-space-pre-line">{{ viewContacto()!.cont_notas }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2">
+            <p-button 
+                label="Cerrar" 
+                icon="pi pi-times" 
+                [outlined]="true"
+                severity="secondary"
+                (onClick)="closeViewDialog()" />
+            <p-button 
+                label="Editar" 
+                icon="pi pi-pencil" 
+                severity="success"
+                (onClick)="editFromView()" />
+        </div>
+    </ng-template>
+</p-dialog>
