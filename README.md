@@ -54,8 +54,7 @@ A continuación, se describen las tareas que debes realizar en el framework Angu
 
 ---
 
-Si tienes alguna pregunta o necesitas asistencia técnica durante la ejecución de esta prueba, no dudes en comunicarte con el contacto que te proporcionó esta tarea. ¡Buena suerte! 😊
-
+Si tienes alguna pregunta o necesitas asistencia técnica durante la ejecución de esta prueba, no dudes en comunicarte con el contacto que te proporcionó esta tarea. ¡Buena suerte!
 
 
 
@@ -63,47 +62,30 @@ Si tienes alguna pregunta o necesitas asistencia técnica durante la ejecución 
 
 Sistema CRUD completo desarrollado con Angular 17 + PrimeNG, conectado a una API Laravel.
 
-## 🚀 Características Implementadas
+## Características Implementadas
 
-### ✅ CRUD de Entidades
-- ✨ Listado de entidades con tabla interactiva (ordenamiento, filtrado, paginación)
-- ➕ Crear nueva entidad con formulario reactivo en modal
-- ✏️ Editar entidad existente
-- 🗑️ Eliminar entidad individual
-- 🗑️ Eliminación múltiple de entidades seleccionadas
-- 🔍 Búsqueda global en tiempo real
-- ✅ Validaciones completas con mensajes de error claros
+### CRUD de Entidades
+- Listado de entidades con tabla interactiva (ordenamiento, filtrado, paginación)
+- Crear nueva entidad con formulario reactivo en modal
+- Editar entidad existente
+- Eliminar entidad individual
+- Eliminación múltiple de entidades seleccionadas
+- Búsqueda global en tiempo real
+- Validaciones completas con mensajes de error claros
 
-### ✅ CRUD de Contactos
-- ✨ Listado de contactos con información de la entidad asociada
-- ➕ Crear nuevo contacto con selección de entidad
-- ✏️ Editar contacto existente
-- 🗑️ Eliminar contacto individual
-- 🗑️ Eliminación múltiple de contactos seleccionados
-- 🔍 Búsqueda global en tiempo real
-- 📅 Selector de fecha de nacimiento
-- 🏢 Dropdown con filtro para seleccionar entidad
-- ✅ Validaciones completas con mensajes de error
+### CRUD de Contactos
+- Listado de contactos con información de la entidad asociada
+- Crear nuevo contacto con selección de entidad
+- Editar contacto existente
+-  Eliminar contacto individual
+- Eliminación múltiple de contactos seleccionados
+- Búsqueda global en tiempo real
+- Selector de fecha de nacimiento
+- Dropdown con filtro para seleccionar entidad
+- Validaciones completas con mensajes de error
 
-### 🎨 Diseño y UX
-- 🎯 Interfaz moderna y profesional con PrimeNG
-- 📱 Diseño responsive
-- 🔔 Notificaciones toast para feedback al usuario
-- 💫 Animaciones suaves y transiciones
-- 🎨 Uso de PrimeFlex para layouts responsive
-- 🔵 Iconos PrimeIcons en toda la interfaz
-- 🎨 Tema Lara Light Blue
 
-### 🔧 Características Técnicas
-- ⚡ Angular 17 con Signals (API moderna)
-- 📝 Formularios reactivos con validaciones
-- 🔄 Manejo de estado con Signals
-- 🌐 Servicios HTTP con manejo de errores
-- 📦 Componentes standalone
-- 🎯 TypeScript con tipado fuerte
-- 🔀 Lazy loading de rutas
-
-## 📋 Validaciones Implementadas
+## Validaciones Implementadas
 
 ### Entidades
 - **Nombre**: Requerido, mínimo 3 caracteres, máximo 100
@@ -122,7 +104,7 @@ Sistema CRUD completo desarrollado con Angular 17 + PrimeNG, conectado a una API
 - **Fecha de Nacimiento**: Requerido, formato fecha
 - **Entidad**: Requerido, debe existir en el sistema
 
-## 🔌 Conexión con API Laravel
+## Conexión con API Laravel
 
 El sistema está configurado para conectarse a la API Laravel mediante variables de entorno definidas en `src/environments/`.
 
@@ -146,7 +128,7 @@ Para cambiar la URL del API, modifica los archivos en `src/environments/` según
 - `PUT /contactos/{id}` - Actualizar contacto
 - `DELETE /contactos/{id}` - Eliminar contacto
 
-## 🛠️ Instalación y Configuración
+## Instalación y Configuración
 
 ### Prerrequisitos
 - Node.js (v18 o superior)
@@ -202,7 +184,7 @@ ng serve
 http://localhost:4200
 ```
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 src/
@@ -240,25 +222,7 @@ src/
     └── environment.development.ts   # Variables de entorno - Desarrollo
 ```
 
-## 🎯 Funcionalidades Principales
-
-### Gestión de Entidades
-1. **Visualizar**: Tabla con todas las entidades, ordenamiento y búsqueda
-2. **Crear**: Click en "Nueva" abre modal con formulario
-3. **Editar**: Click en ícono de lápiz carga datos en el modal
-4. **Eliminar**: 
-   - Individual: Click en ícono de papelera
-   - Múltiple: Seleccionar varias con checkbox y click en "Eliminar"
-5. **Buscar**: Input de búsqueda global filtra en tiempo real
-
-### Gestión de Contactos
-1. **Visualizar**: Tabla con contactos y su entidad asociada
-2. **Crear**: Formulario completo con dropdown de entidades
-3. **Editar**: Similar a entidades
-4. **Eliminar**: Individual y múltiple
-5. **Seleccionar Entidad**: Dropdown con filtro para fácil búsqueda
-
-## 🔍 Manejo de Errores
+## Manejo de Errores
 
 ### Errores de Validación del API
 El sistema muestra automáticamente los errores de validación del backend:
@@ -271,45 +235,3 @@ El sistema muestra automáticamente los errores de validación del backend:
         "email": ["El email ya existe"]
     }
 }
-```
-
-### Errores de Frontend
-- Validaciones en tiempo real mientras el usuario escribe
-- Mensajes de error claros bajo cada campo
-- Indicadores visuales (borde rojo) en campos inválidos
-
-## 📱 Responsive Design
-
-El sistema es completamente responsive:
-- **Desktop**: Layout completo con todas las columnas
-- **Tablet**: Ajuste automático del grid
-- **Mobile**: Columnas apiladas, botones adaptados
-
-## 🎨 Personalización
-
-### Cambiar tema de PrimeNG
-En `src/styles.css`, cambiar:
-```css
-@import "primeng/resources/themes/lara-light-blue/theme.css";
-```
-
-Temas disponibles: lara-light-blue, lara-dark-blue, bootstrap4-light-blue, etc.
-
-### Ajustar URL del API
-Modifica los archivos de environment en `src/environments/`:
-- `environment.ts` - Para producción
-- `environment.development.ts` - Para desarrollo
-
-```typescript
-export const environment = {
-  production: false,
-  apiURL: 'http://tu-api-url:8000/api/',
-};
-```
-
-Los servicios importarán automáticamente la configuración correcta.
-
-## 🚀 Scripts Disponibles
-
-- `npm start` - Inicia el servidor de desarrollo
-- `npm run build` - Compila el proyecto para producción
